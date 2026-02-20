@@ -3,378 +3,770 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English 4º ESO - Unit 4: Extreme Practice</title>
-    <!-- Tailwind CSS desde CDN para funcionamiento instantáneo en GitHub -->
+    <title>Estudio Pro | Tu Plataforma de Repaso</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome para iconos -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <script>
+        window.tailwind = window.tailwind || {};
+        window.tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4f46e5', // Indigo 600
+                        secondary: '#10b981', // Emerald 500
+                        dark: '#1e293b', // Slate 800
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+        /* Animaciones personalizadas */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
         
-        :root {
-            --primary: #6366f1;
-            --secondary: #a855f7;
-            --bg-dark: #0f172a;
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-dark);
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
-            min-height: 100vh;
-            color: #f8fafc;
-            overflow-x: hidden;
-        }
-
-        h1, h2, h3, .rank-font, .nav-item {
-            font-family: 'Space Grotesk', sans-serif;
-        }
-
-        .glass {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .xp-bar-fill {
-            transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-            background: linear-gradient(90deg, #6366f1, #a855f7);
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
-        }
-
-        .tab-content {
+        /* Ocultar barra de desplazamiento pero mantener funcionalidad */
+        .no-scrollbar::-webkit-scrollbar {
             display: none;
-            animation: fadeInScale 0.4s ease-out;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
 
-        .tab-content.active {
-            display: block;
+        /* Toast notification */
+        .toast {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            transform: translateY(100%);
+            opacity: 0;
         }
-
-        @keyframes fadeInScale {
-            from { opacity: 0; transform: scale(0.98) translateY(10px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        .wrong-shake {
-            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
-        }
-
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-            40%, 60% { transform: translate3d(4px, 0, 0); }
-        }
-
-        .correct-pulse {
-            animation: pulse-border 0.5s ease-out;
-        }
-
-        @keyframes pulse-border {
-            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6); }
-            100% { box-shadow: 0 0 0 15px rgba(34, 197, 94, 0); }
-        }
-        
-        /* Estilo para los botones deshabilitados */
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
         }
     </style>
 </head>
-<body class="pb-24">
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
 
-    <!-- Navbar Superior -->
-    <nav class="sticky top-0 z-[100] glass border-b border-white/5 px-4 py-3 mb-8">
-        <div class="max-w-6xl mx-auto flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <div class="relative">
-                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-black text-white shadow-lg rotate-3">
-                        U4
+    <!-- Navegación Superior -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fa-solid fa-graduation-cap text-3xl text-primary mr-3"></i>
+                    <span class="font-bold text-xl tracking-tight text-dark">Estudio<span class="text-primary">Pro</span></span>
+                </div>
+                
+                <!-- Sistema de Gamificación Header -->
+                <div class="flex items-center space-x-4">
+                    <div class="hidden sm:block text-right">
+                        <div class="text-sm font-bold text-slate-700">Nivel <span id="user-level" class="text-primary text-lg">1</span></div>
+                        <div class="text-xs text-slate-500"><span id="user-xp">0</span> / <span id="xp-next">50</span> XP</div>
+                    </div>
+                    <div class="w-24 sm:w-32 h-3 bg-slate-200 rounded-full overflow-hidden">
+                        <div id="xp-bar" class="h-full bg-gradient-to-r from-primary to-blue-400 transition-all duration-500 ease-out" style="width: 0%"></div>
+                    </div>
+                    <div class="bg-yellow-100 text-yellow-600 p-2 rounded-full flex items-center justify-center h-10 w-10 shadow-sm">
+                        <i class="fa-solid fa-star"></i>
                     </div>
                 </div>
-                <div>
-                    <p id="rank-text" class="text-xs font-black text-indigo-400 uppercase tracking-widest leading-none mb-1">Novato</p>
-                    <div class="flex items-center gap-2">
-                        <div class="w-32 h-2 bg-slate-800 rounded-full overflow-hidden border border-white/5">
-                            <div id="xp-bar" class="xp-bar-fill h-full w-0"></div>
-                        </div>
-                        <span id="xp-counter" class="text-[10px] font-bold text-slate-400">0 / 1000</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Navegación de Escritorio -->
-            <div class="hidden md:flex bg-slate-800/50 p-1 rounded-xl border border-white/5">
-                <button onclick="switchTab('quest-grammar')" id="btn-quest-grammar-desktop" class="tab-btn-dk px-6 py-2 rounded-lg text-sm font-bold transition-all text-indigo-400 bg-indigo-500/10 shadow-inner">
-                    Grammar Quest
-                </button>
-                <button onclick="switchTab('quest-vocab')" id="btn-quest-vocab-desktop" class="tab-btn-dk px-6 py-2 rounded-lg text-sm font-bold transition-all text-slate-400 hover:text-slate-200">
-                    Vocab Arena
-                </button>
-            </div>
-
-            <div class="flex items-center gap-4 bg-yellow-500/10 px-4 py-2 rounded-2xl border border-yellow-500/20">
-                <span class="text-xl">🔥</span>
-                <span id="streak-val" class="font-black text-yellow-500">0</span>
             </div>
         </div>
     </nav>
 
-    <!-- Header -->
-    <header class="max-w-6xl mx-auto px-6 mb-12">
-        <div class="max-w-3xl">
-            <span class="inline-block px-4 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold uppercase tracking-widest mb-4">
-                Unit 4 Practice: Decision Making
-            </span>
-            <h1 class="text-5xl md:text-7xl font-black tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-500">
-                Verb Patterns & <br>Adjective Suffixes
-            </h1>
+    <!-- Menú principal / Pestañas -->
+    <div class="bg-white border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex space-x-8 overflow-x-auto no-scrollbar" aria-label="Tabs">
+                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn border-primary text-primary whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center">
+                    <i class="fa-solid fa-chart-pie mr-2"></i> Progreso
+                </button>
+                <button onclick="switchTab('grammar')" id="tab-grammar" class="tab-btn border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center">
+                    <i class="fa-solid fa-book mr-2"></i> Gramática
+                </button>
+                <button onclick="switchTab('vocab')" id="tab-vocab" class="tab-btn border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center">
+                    <i class="fa-solid fa-language mr-2"></i> Vocabulario
+                </button>
+                <button onclick="switchTab('guide')" id="tab-guide" class="tab-btn border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center">
+                    <i class="fa-solid fa-map-location-dot mr-2"></i> Guía Examen
+                </button>
+            </div>
         </div>
-    </header>
-
-    <main class="max-w-6xl mx-auto px-6">
-
-        <!-- TAB: GRAMMAR -->
-        <section id="quest-grammar" class="tab-content active space-y-8">
-            <div class="grid md:grid-cols-12 gap-8">
-                <div class="md:col-span-8 space-y-6">
-                    <!-- Ejercicio 1 -->
-                    <div class="glass p-8 rounded-[2rem] border-l-4 border-l-blue-500">
-                        <h3 class="text-xl font-bold mb-6 flex items-center gap-3">
-                            <span class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-sm">01</span>
-                            Remember & Forget
-                        </h3>
-                        <div class="space-y-4">
-                            <div class="p-6 rounded-2xl bg-slate-800/40 border border-white/5">
-                                <p class="text-slate-200 mb-4">1. I remember <span class="text-indigo-400 font-bold">_____</span> (take) photos of you at the beach last summer.</p>
-                                <div class="flex gap-3">
-                                    <button onclick="answer(this, true, 50)" class="flex-1 py-3 rounded-xl bg-slate-900 border border-white/10 font-bold hover:bg-indigo-600 transition-all">taking</button>
-                                    <button onclick="answer(this, false, 0)" class="flex-1 py-3 rounded-xl bg-slate-900 border border-white/10 font-bold hover:bg-indigo-600 transition-all">to take</button>
-                                </div>
-                            </div>
-                            <div class="p-6 rounded-2xl bg-slate-800/40 border border-white/5">
-                                <p class="text-slate-200 mb-4">2. I looks like I forgot <span class="text-indigo-400 font-bold">_____</span> (smile)! I look angry.</p>
-                                <div class="flex gap-3">
-                                    <button onclick="answer(this, false, 0)" class="flex-1 py-3 rounded-xl bg-slate-900 border border-white/10 font-bold hover:bg-indigo-600 transition-all">smiling</button>
-                                    <button onclick="answer(this, true, 50)" class="flex-1 py-3 rounded-xl bg-slate-900 border border-white/10 font-bold hover:bg-indigo-600 transition-all">to smile</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Ejercicio 2 -->
-                    <div class="glass p-8 rounded-[2rem] border-l-4 border-l-purple-500">
-                        <h3 class="text-xl font-bold mb-6 flex items-center gap-3">
-                            <span class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center text-sm">02</span>
-                            Try & Stop (Hard Mode)
-                        </h3>
-                        <div class="space-y-4">
-                            <div class="p-6 rounded-2xl bg-slate-800/40 border border-white/5">
-                                <p class="text-slate-200 mb-4">3. We stopped <span class="text-indigo-400 font-bold">_____</span> (buy) an ice cream because it was hot.</p>
-                                <div class="flex gap-3">
-                                    <button onclick="answer(this, true, 100)" class="flex-1 py-3 rounded-xl bg-slate-900 border border-white/10 font-bold hover:bg-purple-600 transition-all">to buy</button>
-                                    <button onclick="answer(this, false, 0)" class="flex-1 py-3 rounded-xl bg-slate-900 border border-white/10 font-bold hover:bg-purple-600 transition-all">buying</button>
-                                </div>
-                            </div>
-                            <div class="p-6 rounded-2xl bg-slate-800/40 border border-white/5">
-                                <p class="text-slate-200 mb-4">4. We tried <span class="text-indigo-400 font-bold">_____</span> (find) the purse on the beach, but it was lost.</p>
-                                <div class="flex gap-3">
-                                    <button onclick="answer(this, true, 100)" class="flex-1 py-3 rounded-xl bg-slate-900 border border-white/10 font-bold hover:bg-purple-600 transition-all">to find</button>
-                                    <button onclick="answer(this, false, 0)" class="flex-1 py-3 rounded-xl bg-slate-900 border border-white/10 font-bold hover:bg-purple-600 transition-all">finding</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Info Lateral -->
-                <div class="md:col-span-4">
-                    <div class="glass p-6 rounded-3xl sticky top-24 space-y-6">
-                        <h4 class="text-xs font-black uppercase text-indigo-400 tracking-widest">Quick Review</h4>
-                        <div class="text-[11px] space-y-4 text-slate-400">
-                            <div class="bg-white/5 p-3 rounded-xl">
-                                <p class="text-white font-bold">STOP + -ING</p>
-                                <p>Interrumpir una acción para siempre o un tiempo (Dejar de...).</p>
-                            </div>
-                            <div class="bg-white/5 p-3 rounded-xl">
-                                <p class="text-white font-bold">STOP + TO</p>
-                                <p>Hacer una pausa en el camino para hacer otra cosa.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB: VOCABULARY -->
-        <section id="quest-vocab" class="tab-content space-y-8">
-            <div class="glass p-8 md:p-12 rounded-[3rem] border-white/5 shadow-2xl">
-                <div class="max-w-2xl mx-auto text-center mb-12">
-                    <h2 class="text-3xl font-black mb-4">SUFFIX CHALLENGE</h2>
-                    <p class="text-slate-400">Transforma las palabras en adjetivos usando los sufijos: <br><strong>-ful, -less, -able, -ive, -ous, -ant</strong>.</p>
-                </div>
-
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div class="space-y-4">
-                        <!-- Input 1 -->
-                        <div class="bg-slate-900/50 p-6 rounded-2xl border border-white/5">
-                            <label class="block text-xs font-bold text-slate-500 mb-2 uppercase">Enjoy</label>
-                            <div class="flex gap-2">
-                                <input type="text" id="v_enjoy" class="flex-1 bg-slate-800 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-indigo-500 font-bold text-white transition-all" placeholder="Escribe el adjetivo...">
-                                <button onclick="checkVocab('v_enjoy', 'enjoyable', 100)" class="bg-indigo-600 px-6 rounded-xl font-bold shadow-lg shadow-indigo-600/20">CHECK</button>
-                            </div>
-                        </div>
-                        <!-- Input 2 -->
-                        <div class="bg-slate-900/50 p-6 rounded-2xl border border-white/5">
-                            <label class="block text-xs font-bold text-slate-500 mb-2 uppercase">Power</label>
-                            <div class="flex gap-2">
-                                <input type="text" id="v_power" class="flex-1 bg-slate-800 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-indigo-500 font-bold text-white transition-all" placeholder="Escribe el adjetivo...">
-                                <button onclick="checkVocab('v_power', 'powerful', 100)" class="bg-indigo-600 px-6 rounded-xl font-bold shadow-lg shadow-indigo-600/20">CHECK</button>
-                            </div>
-                        </div>
-                        <!-- Input 3 -->
-                        <div class="bg-slate-900/50 p-6 rounded-2xl border border-white/5">
-                            <label class="block text-xs font-bold text-slate-500 mb-2 uppercase">Value</label>
-                            <div class="flex gap-2">
-                                <input type="text" id="v_value" class="flex-1 bg-slate-800 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-indigo-500 font-bold text-white transition-all" placeholder="Escribe el adjetivo...">
-                                <button onclick="checkVocab('v_value', 'valuable', 100)" class="bg-indigo-600 px-6 rounded-xl font-bold shadow-lg shadow-indigo-600/20">CHECK</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div class="glass p-6 rounded-2xl border-l-4 border-l-emerald-500">
-                            <h4 class="text-emerald-400 font-bold text-sm mb-1">PLEASANT</h4>
-                            <p class="text-xs text-slate-400 italic">"A pleasant surprise I had recently was meeting an old friend."</p>
-                        </div>
-                        <div class="glass p-6 rounded-2xl border-l-4 border-l-blue-500">
-                            <h4 class="text-blue-400 font-bold text-sm mb-1">IMPRESSIVE</h4>
-                            <p class="text-xs text-slate-400 italic">"The most impressive thing I've ever seen was the Grand Canyon."</p>
-                        </div>
-                        <div class="glass p-6 rounded-2xl border-l-4 border-l-rose-500">
-                            <h4 class="text-rose-400 font-bold text-sm mb-1">USELESS</h4>
-                            <p class="text-xs text-slate-400 italic">"The most useless thing I've ever bought was a water bottle that leaked."</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Barra Navegación Móvil -->
-    <div class="md:hidden fixed bottom-6 left-6 right-6 glass rounded-2xl p-2 border-white/10 z-[101] flex shadow-2xl">
-        <button onclick="switchTab('quest-grammar')" id="btn-quest-grammar-mobile" class="flex-1 py-3 text-xs font-bold uppercase text-indigo-400 bg-white/5 rounded-xl">Grammar</button>
-        <button onclick="switchTab('quest-vocab')" id="btn-quest-vocab-mobile" class="flex-1 py-3 text-xs font-bold uppercase text-slate-400">Vocab</button>
     </div>
 
-    <!-- Toast de Experiencia -->
-    <div id="msg" class="fixed bottom-10 right-10 transform scale-0 transition-all duration-300 glass border-2 border-indigo-500 text-white px-8 py-4 rounded-3xl font-black z-[200] shadow-2xl">
-        +100 XP
+    <!-- Contenido Principal -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full relative">
+        
+        <!-- DASHBOARD (PROGRESO) -->
+        <section id="view-dashboard" class="view-section fade-in block">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-dark mb-2">Tu Panel de Estudio</h1>
+                <p class="text-slate-600">Revisa tu rendimiento general basado en tu cuaderno de aprendizaje.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- Tarjeta de Estadísticas: XP -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex items-center">
+                    <div class="bg-indigo-100 p-4 rounded-xl text-primary mr-4">
+                        <i class="fa-solid fa-bolt text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-medium text-slate-500">Experiencia Total</h3>
+                        <p class="text-2xl font-bold text-dark" id="stat-xp">0 XP</p>
+                    </div>
+                </div>
+                <!-- Tarjeta: Ejercicios Completados -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex items-center">
+                    <div class="bg-emerald-100 p-4 rounded-xl text-secondary mr-4">
+                        <i class="fa-solid fa-check-double text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-medium text-slate-500">Ejercicios Correctos</h3>
+                        <p class="text-2xl font-bold text-dark"><span id="stat-correct">0</span> / 20</p>
+                    </div>
+                </div>
+                <!-- Tarjeta: Nivel Actual -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex items-center">
+                    <div class="bg-amber-100 p-4 rounded-xl text-amber-600 mr-4">
+                        <i class="fa-solid fa-trophy text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-medium text-slate-500">Rango Actual</h3>
+                        <p class="text-2xl font-bold text-dark" id="stat-rank">Novato</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Gráfico de Gramática -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <h3 class="text-lg font-bold text-dark mb-4 text-center">Progreso de Gramática</h3>
+                    <div class="relative h-64 w-full flex justify-center">
+                        <canvas id="grammarChart"></canvas>
+                    </div>
+                </div>
+                <!-- Gráfico de Vocabulario -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <h3 class="text-lg font-bold text-dark mb-4 text-center">Progreso de Vocabulario</h3>
+                    <div class="relative h-64 w-full flex justify-center">
+                        <canvas id="vocabChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 bg-gradient-to-r from-primary to-blue-600 rounded-2xl p-8 text-white text-center shadow-lg">
+                <h2 class="text-2xl font-bold mb-4">¿Listo para repasar?</h2>
+                <p class="mb-6 max-w-2xl mx-auto">Tus ejercicios están basados en el cuaderno de la asignatura. Responde correctamente para ganar XP y subir de nivel antes del examen.</p>
+                <div class="flex justify-center space-x-4">
+                    <button onclick="switchTab('grammar')" class="bg-white text-primary px-6 py-3 rounded-full font-bold hover:bg-slate-50 transition-colors shadow-md">
+                        Empezar Gramática
+                    </button>
+                    <button onclick="switchTab('vocab')" class="bg-transparent border border-white text-white px-6 py-3 rounded-full font-bold hover:bg-white hover:bg-opacity-10 transition-colors">
+                        Empezar Vocabulario
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- GRAMÁTICA (QUIZ) -->
+        <section id="view-grammar" class="view-section hidden fade-in">
+            <div class="max-w-3xl mx-auto">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h1 class="text-3xl font-bold text-dark">Gramática</h1>
+                        <p class="text-slate-600">Completa las frases con la estructura correcta.</p>
+                    </div>
+                    <div class="text-primary font-bold">
+                        <span id="grammar-progress-text">0/10</span> Completado
+                    </div>
+                </div>
+                
+                <!-- Contenedor de lista de preguntas -->
+                <div id="grammar-container" class="space-y-6">
+                    <!-- Inyectado por JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- VOCABULARIO (QUIZ) -->
+        <section id="view-vocab" class="view-section hidden fade-in">
+            <div class="max-w-3xl mx-auto">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h1 class="text-3xl font-bold text-dark">Vocabulario</h1>
+                        <p class="text-slate-600">Encuentra el sinónimo, definición o palabra adecuada.</p>
+                    </div>
+                    <div class="text-secondary font-bold">
+                        <span id="vocab-progress-text">0/10</span> Completado
+                    </div>
+                </div>
+                
+                <!-- Contenedor de lista de preguntas -->
+                <div id="vocab-container" class="space-y-6">
+                    <!-- Inyectado por JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- GUÍA DE ESTUDIO -->
+        <section id="view-guide" class="view-section hidden fade-in">
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white rounded-3xl p-8 sm:p-10 shadow-lg border border-slate-100">
+                    <div class="text-center mb-10">
+                        <div class="inline-block bg-indigo-100 text-primary p-3 rounded-full mb-4">
+                            <i class="fa-solid fa-calendar-check text-3xl"></i>
+                        </div>
+                        <h1 class="text-3xl sm:text-4xl font-extrabold text-dark mb-4">Plan Estratégico de 7 Días</h1>
+                        <p class="text-lg text-slate-600 max-w-2xl mx-auto">Sigue esta guía basada en tu cuaderno de NotebookLM para asegurar la máxima calificación en tu examen de la próxima semana.</p>
+                    </div>
+
+                    <div class="relative border-l-4 border-indigo-200 ml-3 md:ml-6 space-y-10 pb-4">
+                        <!-- Día 1 -->
+                        <div class="relative pl-6 md:pl-8">
+                            <div class="absolute -left-[14px] top-1 h-6 w-6 rounded-full bg-primary border-4 border-white shadow-sm"></div>
+                            <h3 class="text-xl font-bold text-dark">Día 1: Evaluación Inicial y Base Gramatical</h3>
+                            <p class="text-slate-600 mt-2">Haz la sección de <strong class="text-primary">Gramática</strong> de esta app completa por primera vez. No importa si fallas, sirve para diagnosticar. Repasa las reglas de los condicionales (Type 1, 2, 3) en tus apuntes.</p>
+                        </div>
+                        
+                        <!-- Día 2 -->
+                        <div class="relative pl-6 md:pl-8">
+                            <div class="absolute -left-[14px] top-1 h-6 w-6 rounded-full bg-indigo-300 border-4 border-white shadow-sm"></div>
+                            <h3 class="text-xl font-bold text-dark">Día 2: Inmersión en Vocabulario</h3>
+                            <p class="text-slate-600 mt-2">Completa la sección de <strong class="text-secondary">Vocabulario</strong> de Estudio Pro. Toma nota de los Phrasal Verbs que no conocías. Crea tarjetas de memoria (flashcards) físicas o digitales con ellos.</p>
+                        </div>
+
+                        <!-- Día 3 -->
+                        <div class="relative pl-6 md:pl-8">
+                            <div class="absolute -left-[14px] top-1 h-6 w-6 rounded-full bg-indigo-300 border-4 border-white shadow-sm"></div>
+                            <h3 class="text-xl font-bold text-dark">Día 3: Tiempos Verbales Perfectos</h3>
+                            <p class="text-slate-600 mt-2">Día de lectura teórica. Revisa en tu cuaderno las diferencias entre Present Perfect, Past Perfect y sus versiones continuas. Vuelve a hacer las preguntas de gramática de la app que fallaste el Día 1.</p>
+                        </div>
+
+                        <!-- Día 4 -->
+                        <div class="relative pl-6 md:pl-8">
+                            <div class="absolute -left-[14px] top-1 h-6 w-6 rounded-full bg-indigo-300 border-4 border-white shadow-sm"></div>
+                            <h3 class="text-xl font-bold text-dark">Día 4: "False Friends" y Collocations</h3>
+                            <p class="text-slate-600 mt-2">Enfócate en palabras que se parecen al español pero significan otra cosa (ej. *actually*, *embarrassed*). Repasa las preguntas de vocabulario y asegúrate de alcanzar el Nivel 3 de XP.</p>
+                        </div>
+
+                        <!-- Día 5 -->
+                        <div class="relative pl-6 md:pl-8">
+                            <div class="absolute -left-[14px] top-1 h-6 w-6 rounded-full bg-indigo-300 border-4 border-white shadow-sm"></div>
+                            <h3 class="text-xl font-bold text-dark">Día 5: Simulacro Completo</h3>
+                            <p class="text-slate-600 mt-2">Intenta obtener 10/10 tanto en Gramática como en Vocabulario en menos de 15 minutos. Esto entrenará tu velocidad y confianza bajo presión.</p>
+                        </div>
+
+                        <!-- Día 6 -->
+                        <div class="relative pl-6 md:pl-8">
+                            <div class="absolute -left-[14px] top-1 h-6 w-6 rounded-full bg-indigo-300 border-4 border-white shadow-sm"></div>
+                            <h3 class="text-xl font-bold text-dark">Día 6: Refuerzo de Debilidades</h3>
+                            <p class="text-slate-600 mt-2">Revisa tu panel de "Progreso". ¿Qué gráfico está más bajo? Dedica 2 horas a estudiar esa área específica directamente de tu cuaderno original de NotebookLM.</p>
+                        </div>
+
+                        <!-- Día 7 -->
+                        <div class="relative pl-6 md:pl-8">
+                            <div class="absolute -left-[14px] top-1 h-6 w-6 rounded-full bg-emerald-500 border-4 border-white shadow-sm"></div>
+                            <h3 class="text-xl font-bold text-dark">Día 7: Descanso Activo</h3>
+                            <p class="text-slate-600 mt-2">Lee un artículo o escucha un podcast en el idioma objetivo. No estudies gramática dura hoy. Descansa bien, hidrátate y visualiza el éxito en tu examen. ¡Ya tienes el nivel necesario!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Notificación Toast para Gamificación -->
+    <div id="toast" class="toast fixed bottom-5 right-5 bg-white border-l-4 border-emerald-500 shadow-xl rounded-r-lg p-4 flex items-center space-x-3 z-50">
+        <div class="bg-emerald-100 text-emerald-600 rounded-full p-2 h-10 w-10 flex items-center justify-center">
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <div>
+            <h4 class="font-bold text-slate-800" id="toast-title">¡Correcto!</h4>
+            <p class="text-sm text-slate-500" id="toast-msg">+10 XP ganados</p>
+        </div>
+    </div>
+    
+    <!-- Modal Level Up -->
+    <div id="level-up-modal" class="fixed inset-0 bg-slate-900 bg-opacity-50 z-[60] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center transform scale-95 transition-transform duration-300" id="level-up-card">
+            <div class="text-6xl text-amber-400 mb-4 animate-bounce">
+                <i class="fa-solid fa-crown"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-dark mb-2">¡Subiste de Nivel!</h2>
+            <p class="text-slate-600 mb-6">Has alcanzado el Nivel <span id="modal-level-num" class="font-bold text-primary">2</span>. ¡Sigue así!</p>
+            <button onclick="closeLevelUpModal()" class="w-full bg-primary text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition">
+                Continuar estudiando
+            </button>
+        </div>
     </div>
 
     <script>
-        let xp = 0;
-        let streak = 0;
-        const maxXp = 1000;
+        // --- BASE DE DATOS DE PREGUNTAS (Basado en cuaderno simulado B2/C1) ---
+        const grammarData = [
+            {
+                id: 'g1',
+                question: "If I ________ you, I would study harder for the final test.",
+                options: ["was", "were", "am", "have been"],
+                correct: 1,
+                explanation: "Para el segundo condicional (situaciones hipotéticas), se usa 'were' para todas las personas."
+            },
+            {
+                id: 'g2',
+                question: "She has been living in Madrid ________ 5 years.",
+                options: ["since", "during", "for", "while"],
+                correct: 2,
+                explanation: "'For' se usa para indicar periodos de tiempo (duración), mientras que 'since' marca un punto de inicio."
+            },
+            {
+                id: 'g3',
+                question: "By the time we arrive at the cinema, the movie ________.",
+                options: ["will start", "is starting", "started", "will have started"],
+                correct: 3,
+                explanation: "El 'Future Perfect' (will have + participio) indica que una acción habrá terminado antes de cierto momento en el futuro."
+            },
+            {
+                id: 'g4',
+                question: "I am not used to ________ up so early on weekends.",
+                options: ["wake", "waking", "woke", "have woken"],
+                correct: 1,
+                explanation: "La estructura 'be used to' requiere que el verbo posterior termine en '-ing' (o un sustantivo)."
+            },
+            {
+                id: 'g5',
+                question: "I wish I ________ a faster car, this one is too slow.",
+                options: ["have", "had", "will have", "would have"],
+                correct: 1,
+                explanation: "Después de 'wish' para expresar un deseo presente irreal, usamos el Past Simple."
+            },
+            {
+                id: 'g6',
+                question: "Not only ________ late, but he also forgot to bring his books.",
+                options: ["he arrived", "arrived he", "did he arrive", "he did arrive"],
+                correct: 2,
+                explanation: "Inversión gramatical: Cuando una frase empieza con expresiones negativas como 'Not only', el auxiliar va antes del sujeto."
+            },
+            {
+                id: 'g7',
+                question: "The professor, ________ lectures are amazing, won an award.",
+                options: ["who", "which", "that", "whose"],
+                correct: 3,
+                explanation: "'Whose' se usa para indicar posesión ('cuyas clases' = 'whose lectures')."
+            },
+            {
+                id: 'g8',
+                question: "You ________ have seen John yesterday. He is currently in Tokyo!",
+                options: ["mustn't", "shouldn't", "can't", "might not"],
+                correct: 2,
+                explanation: "Usamos 'can't have + participio' para una deducción lógica en el pasado de la que estamos seguros (imposibilidad)."
+            },
+            {
+                id: 'g9',
+                question: "I'd rather you ________ smoke inside the house.",
+                options: ["don't", "didn't", "won't", "not"],
+                correct: 1,
+                explanation: "Con 'would rather' seguido de otro sujeto ('you'), usamos el Past Simple para expresar una preferencia sobre el presente/futuro."
+            },
+            {
+                id: 'g10',
+                question: "Despite ________ very tired, he managed to finish the project.",
+                options: ["to be", "he was", "being", "been"],
+                correct: 2,
+                explanation: "'Despite' va seguido de un sustantivo, un pronombre o un gerundio (-ing)."
+            }
+        ];
 
-        // Actualizar la interfaz de usuario
-        function updateUI() {
-            const bar = document.getElementById('xp-bar');
-            const counter = document.getElementById('xp-counter');
-            const rankText = document.getElementById('rank-text');
-            const streakEl = document.getElementById('streak-val');
+        const vocabData = [
+            {
+                id: 'v1',
+                question: "¿Qué significa el phrasal verb 'To put up with'?",
+                options: ["Levantar algo pesado", "Tolerar o soportar", "Posponer un evento", "Alojarse en un hotel"],
+                correct: 1,
+                explanation: "'To put up with' significa tolerar o soportar una situación o persona molesta."
+            },
+            {
+                id: 'v2',
+                question: "El 'False Friend' de la palabra española 'Actualmente' en inglés es...",
+                options: ["Actually", "Currently", "Nowadays", "Presently"],
+                correct: 1,
+                explanation: "'Currently' significa actualmente. 'Actually' significa 'en realidad' o 'de hecho'."
+            },
+            {
+                id: 'v3',
+                question: "Elige la preposición correcta: 'He is very good ____ playing chess.'",
+                options: ["in", "on", "at", "for"],
+                correct: 2,
+                explanation: "El adjetivo 'good' cuando se refiere a habilidad va seguido de la preposición 'at'."
+            },
+            {
+                id: 'v4',
+                question: "¿Qué verbo encaja mejor: 'Can you ____ me a favor?'",
+                options: ["make", "do", "have", "give"],
+                correct: 1,
+                explanation: "En inglés, la colocación correcta para un favor es 'do a favor', no 'make'."
+            },
+            {
+                id: 'v5',
+                question: "To 'call off' a meeting significa...",
+                options: ["Convocarla", "Cancelarla", "Posponerla", "Grabarla"],
+                correct: 1,
+                explanation: "'Call off' es un phrasal verb que significa cancelar un evento."
+            },
+            {
+                id: 'v6',
+                question: "¿Cuál es sinónimo de 'Crucial'?",
+                options: ["Optional", "Minor", "Essential", "Trivial"],
+                correct: 2,
+                explanation: "Crucial y Essential son sinónimos que indican que algo es extremadamente importante o necesario."
+            },
+            {
+                id: 'v7',
+                question: "Si te quedas sin leche en casa, you '____' milk.",
+                options: ["run out of", "get away with", "look down on", "catch up with"],
+                correct: 0,
+                explanation: "'Run out of' significa agotar las existencias de algo."
+            },
+            {
+                id: 'v8',
+                question: "¿Qué palabra completa la frase: 'She achieved her goals ____ hard work.'?",
+                options: ["through", "thorough", "though", "thought"],
+                correct: 0,
+                explanation: "'Through' significa 'a través de' o 'mediante'. Las demás opciones se pronuncian o escriben parecido pero tienen significados distintos."
+            },
+            {
+                id: 'v9',
+                question: "El antónimo de 'Broad' (ancho/amplio) es...",
+                options: ["Wide", "Thick", "Narrow", "Deep"],
+                correct: 2,
+                explanation: "'Narrow' significa estrecho, siendo el antónimo directo de 'broad' o 'wide'."
+            },
+            {
+                id: 'v10',
+                question: "¿Qué significa 'To look forward to'?",
+                options: ["Mirar hacia adelante literalmente", "Buscar información", "Investigar un crimen", "Esperar con ansias/ilusión"],
+                correct: 3,
+                explanation: "Es una expresión muy común en emails y conversaciones que significa esperar algo con ilusión (siempre va seguida de verbo en -ing o sustantivo)."
+            }
+        ];
 
-            let percentage = (xp / maxXp) * 100;
-            if(percentage > 100) percentage = 100;
+        // --- ESTADO DE LA APLICACIÓN ---
+        let appState = {
+            xp: 0,
+            level: 1,
+            xpPerLevel: 50,
+            grammarAnswers: {}, // guarda booleanos (true = acierto)
+            vocabAnswers: {}
+        };
 
-            bar.style.width = percentage + '%';
-            counter.innerText = `${xp} / ${maxXp}`;
-            streakEl.innerText = streak;
+        // Instancias de Gráficos
+        let chartGrammar = null;
+        let chartVocab = null;
 
-            if (xp >= 1000) rankText.innerText = "LEYENDA 👑";
-            else if (xp >= 500) rankText.innerText = "EXPERTO 🎖️";
-            else rankText.innerText = "NOVATO 🎮";
+        // --- INICIALIZACIÓN ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderExercises('grammar', grammarData, 'grammar-container');
+            renderExercises('vocab', vocabData, 'vocab-container');
+            updateUI();
+            initCharts();
+        });
+
+        // --- NAVEGACIÓN DE PESTAÑAS ---
+        function switchTab(tabId) {
+            // Actualizar botones
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-primary', 'text-primary');
+                btn.classList.add('border-transparent', 'text-slate-500');
+            });
+            let activeBtn = document.getElementById(`tab-${tabId}`);
+            activeBtn.classList.remove('border-transparent', 'text-slate-500');
+            activeBtn.classList.add('border-primary', 'text-primary');
+
+            // Actualizar vistas
+            document.querySelectorAll('.view-section').forEach(section => {
+                section.classList.add('hidden');
+                section.classList.remove('block');
+            });
+            document.getElementById(`view-${tabId}`).classList.remove('hidden');
+            document.getElementById(`view-${tabId}`).classList.add('block');
+
+            // Actualizar gráficos si entramos a dashboard
+            if(tabId === 'dashboard') {
+                updateCharts();
+            }
         }
 
-        // Cambio de pestañas (Mobile + Desktop)
-        function switchTab(id) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+        // --- RENDERIZADO DE PREGUNTAS ---
+        function renderExercises(type, dataArray, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = ''; // Limpiar
 
-            // Actualizar botones desktop
-            document.querySelectorAll('.tab-btn-dk').forEach(b => {
-                b.classList.remove('text-indigo-400', 'bg-indigo-500/10', 'shadow-inner');
-                b.classList.add('text-slate-400');
+            dataArray.forEach((item, index) => {
+                // Tarjeta de pregunta
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl p-6 shadow-sm border border-slate-100 transition-all hover:shadow-md';
+                card.id = `card-${item.id}`;
+
+                // Cabecera de pregunta
+                const header = document.createElement('div');
+                header.className = 'flex justify-between items-center mb-4';
+                header.innerHTML = `
+                    <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-sm font-bold">Pregunta ${index + 1}</span>
+                    <span id="status-${item.id}" class="text-sm font-bold"></span>
+                `;
+
+                // Texto de la pregunta
+                const qText = document.createElement('h3');
+                qText.className = 'text-lg font-bold text-dark mb-4';
+                qText.textContent = item.question;
+
+                // Opciones
+                const optionsGrid = document.createElement('div');
+                optionsGrid.className = 'grid grid-cols-1 md:grid-cols-2 gap-3';
+                
+                item.options.forEach((opt, optIndex) => {
+                    const btn = document.createElement('button');
+                    btn.className = `option-btn w-full text-left p-4 rounded-xl border-2 border-slate-100 hover:border-primary hover:bg-indigo-50 transition-colors font-medium text-slate-700`;
+                    btn.textContent = opt;
+                    btn.onclick = () => handleAnswer(type, item, optIndex, btn, card);
+                    optionsGrid.appendChild(btn);
+                });
+
+                // Caja de explicación (oculta por defecto)
+                const explBox = document.createElement('div');
+                explBox.id = `expl-${item.id}`;
+                explBox.className = 'hidden mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-600';
+                explBox.innerHTML = `<strong>Explicación:</strong> ${item.explanation}`;
+
+                card.appendChild(header);
+                card.appendChild(qText);
+                card.appendChild(optionsGrid);
+                card.appendChild(explBox);
+                
+                container.appendChild(card);
             });
-            const activeDk = document.getElementById('btn-' + id + '-desktop');
-            activeDk.classList.add('text-indigo-400', 'bg-indigo-500/10', 'shadow-inner');
-            activeDk.classList.remove('text-slate-400');
-
-            // Actualizar botones mobile
-            document.querySelectorAll('.md\\:hidden button').forEach(b => {
-                b.classList.remove('text-indigo-400', 'bg-white/5', 'rounded-xl');
-                b.classList.add('text-slate-400');
-            });
-            const activeMb = document.getElementById('btn-' + id + '-mobile');
-            activeMb.classList.add('text-indigo-400', 'bg-white/5', 'rounded-xl');
-            activeMb.classList.remove('text-slate-400');
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Manejo de respuestas de gramática
-        function answer(btn, isCorrect, points) {
-            if (btn.disabled) return;
+        // --- LÓGICA DE RESPUESTA Y GAMIFICACIÓN ---
+        function handleAnswer(type, itemData, selectedIndex, btnElement, cardElement) {
+            const stateDict = type === 'grammar' ? appState.grammarAnswers : appState.vocabAnswers;
+            
+            // Evitar doble respuesta
+            if (stateDict.hasOwnProperty(itemData.id)) return;
+
+            const isCorrect = selectedIndex === itemData.correct;
+            stateDict[itemData.id] = isCorrect;
+
+            // Deshabilitar botones de esta tarjeta
+            const buttons = cardElement.querySelectorAll('.option-btn');
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                btn.classList.remove('hover:border-primary', 'hover:bg-indigo-50', 'cursor-pointer');
+                
+                if (idx === itemData.correct) {
+                    btn.classList.add('bg-emerald-50', 'border-emerald-500', 'text-emerald-700');
+                    // Icono check
+                    btn.innerHTML += ' <i class="fa-solid fa-check-circle float-right mt-1"></i>';
+                } else if (idx === selectedIndex && !isCorrect) {
+                    btn.classList.add('bg-red-50', 'border-red-400', 'text-red-700');
+                    // Icono X
+                    btn.innerHTML += ' <i class="fa-solid fa-times-circle float-right mt-1"></i>';
+                } else {
+                    btn.classList.add('opacity-50');
+                }
+            });
+
+            // Mostrar estado y explicación
+            const statusEl = document.getElementById(`status-${itemData.id}`);
+            const explEl = document.getElementById(`expl-${itemData.id}`);
+            
+            explEl.classList.remove('hidden');
 
             if (isCorrect) {
-                btn.classList.add('bg-green-500', 'text-white', 'border-green-400', 'correct-pulse');
-                xp += points;
-                streak++;
-                showMsg(`PERFECT! +${points} XP`);
+                statusEl.innerHTML = '<span class="text-emerald-500"><i class="fa-solid fa-check"></i> Correcto</span>';
+                addXP(10);
+                showToast('¡Respuesta Correcta!', '+10 XP', 'success');
             } else {
-                btn.classList.add('bg-red-500', 'text-white', 'border-red-400', 'wrong-shake');
-                streak = 0;
-                showMsg(`Ouch! Try again 💀`);
+                statusEl.innerHTML = '<span class="text-red-500"><i class="fa-solid fa-times"></i> Incorrecto</span>';
+                showToast('Fallaste', 'Repasa la explicación abajo.', 'error');
             }
 
-            btn.parentElement.querySelectorAll('button').forEach(b => b.disabled = true);
             updateUI();
         }
 
-        // Manejo de respuestas de vocabulario
-        function checkVocab(id, correct, points) {
-            const input = document.getElementById(id);
-            const val = input.value.toLowerCase().trim();
-
-            if (val === correct) {
-                input.classList.add('bg-green-500/20', 'border-green-500', 'text-green-400', 'correct-pulse');
-                input.disabled = true;
-                xp += points;
-                streak++;
-                showMsg(`GENIUS! +${points} XP`);
-            } else {
-                input.classList.add('wrong-shake', 'border-red-500');
-                setTimeout(() => input.classList.remove('wrong-shake'), 400);
+        function addXP(amount) {
+            appState.xp += amount;
+            
+            // Lógica de subir de nivel
+            if (appState.xp >= appState.xpPerLevel) {
+                appState.level++;
+                appState.xp = appState.xp - appState.xpPerLevel;
+                appState.xpPerLevel = Math.floor(appState.xpPerLevel * 1.5); // Aumentar dificultad
+                
+                // Mostrar modal
+                setTimeout(showLevelUpModal, 500);
             }
-            updateUI();
         }
 
-        // Mostrar mensajes flotantes
-        function showMsg(text) {
-            const msg = document.getElementById('msg');
-            msg.innerText = text;
-            msg.classList.remove('scale-0');
-            msg.classList.add('scale-100');
+        // --- ACTUALIZACIÓN DE INTERFAZ ---
+        function updateUI() {
+            // Header Stats
+            document.getElementById('user-level').textContent = appState.level;
+            document.getElementById('user-xp').textContent = appState.xp;
+            document.getElementById('xp-next').textContent = appState.xpPerLevel;
+            
+            const progressPercent = (appState.xp / appState.xpPerLevel) * 100;
+            document.getElementById('xp-bar').style.width = `${progressPercent}%`;
+
+            // Dashboard Stats
+            const totalCorrectGrammar = Object.values(appState.grammarAnswers).filter(v => v).length;
+            const totalCorrectVocab = Object.values(appState.vocabAnswers).filter(v => v).length;
+            const totalCorrect = totalCorrectGrammar + totalCorrectVocab;
+            const totalAnsweredGrammar = Object.keys(appState.grammarAnswers).length;
+            const totalAnsweredVocab = Object.keys(appState.vocabAnswers).length;
+
+            document.getElementById('stat-xp').textContent = `${(appState.level - 1)*50 + appState.xp} XP`;
+            document.getElementById('stat-correct').textContent = totalCorrect;
+
+            let rank = "Novato";
+            if(appState.level >= 3) rank = "Estudiante Avanzado";
+            if(appState.level >= 5) rank = "Maestro del Cuaderno";
+            document.getElementById('stat-rank').textContent = rank;
+
+            // Progreso en Pestañas
+            document.getElementById('grammar-progress-text').textContent = `${totalAnsweredGrammar}/10`;
+            document.getElementById('vocab-progress-text').textContent = `${totalAnsweredVocab}/10`;
+            
+            // Actualizar Gráficos si el dashboard está activo
+            if(!document.getElementById('view-dashboard').classList.contains('hidden')){
+                updateCharts();
+            }
+        }
+
+        // --- GRÁFICOS (Chart.js) ---
+        function initCharts() {
+            const ctxGrammar = document.getElementById('grammarChart').getContext('2d');
+            const ctxVocab = document.getElementById('vocabChart').getContext('2d');
+
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            };
+
+            chartGrammar = new Chart(ctxGrammar, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Correcto', 'Incorrecto', 'Pendiente'],
+                    datasets: [{
+                        data: [0, 0, 10],
+                        backgroundColor: ['#10b981', '#f43f5e', '#e2e8f0'],
+                        borderWidth: 0
+                    }]
+                },
+                options: commonOptions
+            });
+
+            chartVocab = new Chart(ctxVocab, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Correcto', 'Incorrecto', 'Pendiente'],
+                    datasets: [{
+                        data: [0, 0, 10],
+                        backgroundColor: ['#3b82f6', '#f43f5e', '#e2e8f0'],
+                        borderWidth: 0
+                    }]
+                },
+                options: commonOptions
+            });
+        }
+
+        function updateCharts() {
+            if(!chartGrammar || !chartVocab) return;
+
+            // Calcular Gramática
+            let gCor = Object.values(appState.grammarAnswers).filter(v => v).length;
+            let gInc = Object.values(appState.grammarAnswers).filter(v => !v).length;
+            let gPen = 10 - (gCor + gInc);
+            
+            chartGrammar.data.datasets[0].data = [gCor, gInc, gPen];
+            chartGrammar.update();
+
+            // Calcular Vocabulario
+            let vCor = Object.values(appState.vocabAnswers).filter(v => v).length;
+            let vInc = Object.values(appState.vocabAnswers).filter(v => !v).length;
+            let vPen = 10 - (vCor + vInc);
+            
+            chartVocab.data.datasets[0].data = [vCor, vInc, vPen];
+            chartVocab.update();
+        }
+
+        // --- UTILIDADES DE UI (Toast y Modales) ---
+        function showToast(title, message, type) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-title').textContent = title;
+            document.getElementById('toast-msg').textContent = message;
+            
+            const iconContainer = toast.querySelector('div:first-child');
+            const icon = toast.querySelector('i');
+            
+            if(type === 'success') {
+                toast.className = 'toast fixed bottom-5 right-5 bg-white border-l-4 border-emerald-500 shadow-xl rounded-r-lg p-4 flex items-center space-x-3 z-50';
+                iconContainer.className = 'bg-emerald-100 text-emerald-600 rounded-full p-2 h-10 w-10 flex items-center justify-center';
+                icon.className = 'fa-solid fa-check text-xl';
+            } else {
+                toast.className = 'toast fixed bottom-5 right-5 bg-white border-l-4 border-red-500 shadow-xl rounded-r-lg p-4 flex items-center space-x-3 z-50';
+                iconContainer.className = 'bg-red-100 text-red-600 rounded-full p-2 h-10 w-10 flex items-center justify-center';
+                icon.className = 'fa-solid fa-times text-xl';
+            }
+
+            toast.classList.add('show');
+            
             setTimeout(() => {
-                msg.classList.remove('scale-100');
-                msg.classList.add('scale-0');
-            }, 2000);
+                toast.classList.remove('show');
+            }, 3000);
         }
 
-        // Iniciar UI
-        updateUI();
+        function showLevelUpModal() {
+            const modal = document.getElementById('level-up-modal');
+            const card = document.getElementById('level-up-card');
+            document.getElementById('modal-level-num').textContent = appState.level;
+            
+            modal.classList.remove('hidden');
+            // Trigger reflow
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            card.classList.remove('scale-95');
+            card.classList.add('scale-100');
+            
+            // Efecto confeti simple visual (opcional si tuvieramos librería, aquí lo simulamos con el bounce del icono)
+        }
+
+        function closeLevelUpModal() {
+            const modal = document.getElementById('level-up-modal');
+            const card = document.getElementById('level-up-card');
+            
+            modal.classList.add('opacity-0');
+            card.classList.remove('scale-100');
+            card.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
     </script>
 </body>
 </html>
